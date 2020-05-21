@@ -1,6 +1,6 @@
 ### AutoEncoder with Pytorch
 
-This project is an implementation of auto-encoder with MNIST dataset and `pytorch = 1.4`
+This project is an implementation of auto-encoder with MNIST dataset and `pytorch = 1.4.0`
 
 And, Learn tensorboard by the way.
 
