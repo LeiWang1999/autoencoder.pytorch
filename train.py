@@ -39,6 +39,7 @@ inputs = inputs.unsqueeze(dim=0).to(device)
 writer.add_graph(model, inputs)
 
 # Train
+running_loss = 0.0
 for epoch in range(epochs):
     for index, (images, labels) in enumerate(dataloader):
         images = images.to(device)
@@ -47,6 +48,10 @@ for epoch in range(epochs):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        running_loss += loss.item()
+
+    writer.add_scaler('trainning loss', running_loss, epoch * len(dataloader))
+    running_loss = 0.0
     if epoch % 5 == 0:
         tag = "epoch : " + str(epoch)
         writer.add_images(tag=tag, images=images, logits=logits)
@@ -54,5 +59,5 @@ for epoch in range(epochs):
 
 writer.close()
 
-#Save model paramaters
+# Save model paramaters
 torch.save(model.state_dict(), './model/autoencoder.pth')
