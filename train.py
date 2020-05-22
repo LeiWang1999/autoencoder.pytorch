@@ -32,6 +32,13 @@ model.to(device)
 epochs = 200
 criterion = nn.MSELoss().to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
+
+# Draw graph for Visualization
+inputs = torch.rand((1, 28, 28))
+inputs = inputs.unsqueeze(dim=0).to(device)
+writer.add_graph(model, inputs)
+
+# Train
 for epoch in range(epochs):
     for index, (images, labels) in enumerate(dataloader):
         images = images.to(device)
@@ -44,4 +51,8 @@ for epoch in range(epochs):
         tag = "epoch : " + str(epoch)
         writer.add_images(tag=tag, images=images, logits=logits)
     print("epoch: %d, loss : %.3f" % (epoch, loss))
+
 writer.close()
+
+#Save model paramaters
+torch.save(model.state_dict(), './model/autoencoder.pth')

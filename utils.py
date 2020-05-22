@@ -19,5 +19,8 @@ class Writer():
         img_grid = make_grid(imglist)
         self.writer.add_image(tag=tag, img_tensor=img_grid)
 
+    def add_graph(self, net, images):
+        self.writer.add_graph(net ,images)
+
     def close(self):
         self.writer.close()
