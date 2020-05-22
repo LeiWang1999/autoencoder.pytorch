@@ -6,3 +6,5 @@
 
 /model/*
 !/model/.gitkeep
+
+nohup.out
