@@ -1,4 +1,4 @@
-### AutoEncoder with Pytorch
+## AutoEncoder with Pytorch
 
 This project is an implementation of auto-encoder with MNIST dataset and `pytorch = 1.4.0`
 
@@ -12,7 +12,7 @@ The output shape of `ConvTranspose2d` can be computed by formula:
 
 ![](http://leiblog.wang/static/image/2020/5/iF2yma.png)
 
-#### Reference
+### Reference
 
 Hung-yi Lee MachineLearning Spring2020 Course (https://www.bilibili.com/video/BV1JE411g7XF?p=59)
 
