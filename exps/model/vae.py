@@ -1,55 +1,42 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+from torch.nn import functional as F
 
 
 class VaeEncoder(nn.Module):
     def __init__(self, hidden_size=3):
-        super(VaeEncoder, self).__init__()
-        self.conv1 = nn.Sequential(nn.Conv2d(1, 16, 4, 2, 1),
-                                   nn.BatchNorm2d(16),
-                                   nn.ReLU(True))
-        self.conv2 = nn.Sequential(nn.Conv2d(16, 32, 4, 2, 1),
-                                   nn.BatchNorm2d(32),
-                                   nn.ReLU(True))
-        self.conv3 = nn.Sequential(nn.Conv2d(32, 16, 3, 1, 1),
-                                   nn.BatchNorm2d(16),
-                                   nn.ReLU(True))
+        super().__init__()
+        self.fc1 = nn.Linear(784, 500)
+        self.fc21 = nn.Linear(500, hidden_size)  # fc21 for mean of Z
+        self.fc22 = nn.Linear(500, hidden_size)  # fc22 for log variance of Z
+        self.fc3 = nn.Linear(hidden_size, 500)
+        self.fc4 = nn.Linear(500, 784)
 
-        self.fc_encode1 = nn.Linear(16 * 7 * 7, hidden_size)
-        self.fc_encode2 = nn.Linear(16 * 7 * 7, hidden_size)
-        self.fc_decode = nn.Linear(hidden_size, 16 * 7 * 7)
+    def encode(self, x):
+        h1 = F.relu(self.fc1(x))
+        mu = self.fc21(h1)
+        # I guess the reason for using logvar instead of std or var is that
+        # the output of fc22 can be negative value (std and var should be positive)
+        logvar = self.fc22(h1)
+        return mu, logvar
 
-        self.deconv1 = nn.Sequential(nn.ConvTranspose2d(16, 16, 4, 2, 1),
-                                     nn.BatchNorm2d(16),
-                                     nn.ReLU())
-        self.deconv2 = nn.Sequential(nn.ConvTranspose2d(16, 1, 4, 2, 1),
-                                     nn.Sigmoid())
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5*logvar)
+        eps = torch.rand_like(std)
+        return mu + eps*std
 
-    def encoder(self, x):
-        out = self.conv1(x)
-        out = self.conv2(out)
-        out = self.conv3(out)
-        # print(out)
-        return self.fc_encode1(out.view(out.size(0), -1)), self.fc_encode2(out.view(out.size(0), -1))
-
-    def sampler(self, mean, std):
-        var = std.mul(0.5).exp_()
-        eps = torch.FloatTensor(var.size()).normal_()
-        eps = Variable(eps)
-        return eps.mul(var).add_(mean)
-
-    def decoder(self, x):
-        out = self.fc_decode(x)
-        out = self.deconv1(out.view(x.size(0), 16, 7, 7))
-        out = self.deconv2(out)
-        return out
+    def decode(self, z):
+        h3 = F.relu(self.fc3(z))
+        return torch.sigmoid(self.fc4(h3))
 
     def forward(self, x):
-        mean, std = self.encoder(x)
-        code = self.sampler(mean, std)
-        out = self.decoder(code)
-        return out, code, mean, std
+        # x: [batch size, 1, 28,28] -> x: [batch size, 784]
+        x = x.view(-1, 784)
+        mu, logvar = self.encode(x)
+        z = self.reparameterize(mu, logvar)
+        decode = self.decode(z)
+        return decode, mu, logvar
 
 
 if __name__ == "__main__":

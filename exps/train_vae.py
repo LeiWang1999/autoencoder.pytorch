@@ -7,13 +7,16 @@ from model.vae import VaeEncoder
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from lib.utils import Writer
+from torch.nn import functional as F
+
+# --- defines the loss function --- #
 
 
-def loss_f(out, target, mean, std, bce):
-    bceloss = bce(out, target)
-    latent_loss = torch.sum(mean.pow(2).add_(
-        std.exp()).mul_(-1).add_(1).add_(std)).mul_(-0.5)
-    return bceloss + latent_loss
+def loss_function(recon_x, x, mu, logvar):
+    BCE = F.binary_cross_entropy(recon_x, x.view(-1, 784), reduction='sum')
+    KLD = 0.5 * torch.sum(mu.pow(2) + logvar.exp() - logvar - 1)
+
+    return BCE + KLD
 
 
 # Setup device
@@ -28,8 +31,7 @@ root = './data'
 download = False
 batch_size = 128
 transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize([0.5], [0.5])
+    transforms.ToTensor()
 ])
 dataset = datasets.MNIST(root=root,
                          download=download, transform=transform)
@@ -38,23 +40,23 @@ dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
 # Initialze Model
 model = VaeEncoder()
 model.to(device)
-epochs = 20
-criterion = nn.BCELoss().to(device)
-criterion.size_average = False
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
+epochs = 200
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # Draw graph for Visualization
+model.eval()
 inputs = torch.rand((1, 28, 28))
 inputs = inputs.unsqueeze(dim=0)
-writer.add_graph(model, inputs)
+writer.add_graph(model, inputs.to(device))
 
 # Train
 running_loss = 0.0
+model.train()
 for epoch in range(epochs):
     for index, (images, labels) in enumerate(dataloader):
         images = images.to(device)
-        output, _, mean, std = model(images)
-        loss = loss_f(output, data, mean, std, criterion)
+        decode, mu, logvar = model(images)
+        loss = loss_function(decode, images, mu, logvar)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -65,6 +67,7 @@ for epoch in range(epochs):
     running_loss = 0.0
     if epoch % 5 == 0:
         tag = "epoch : " + str(epoch)
+        decode = decode.view(-1, 1, 28, 28)
         writer.add_images(tag=tag, images=images, logits=decode)
     print("epoch: %d, loss : %.3f" % (epoch, loss))
 
