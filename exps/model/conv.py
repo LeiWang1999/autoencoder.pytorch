@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class AutoEncoder(nn.Module):
+class ConvEncoder(nn.Module):
     def __init__(self):
-        super(AutoEncoder, self).__init__()
+        super(ConvEncoder, self).__init__()
         self.encoder = nn.Sequential(
             # 1,28,28
             nn.Conv2d(1, 16, 3, stride=3, padding=1),
@@ -32,13 +32,13 @@ class AutoEncoder(nn.Module):
         )
 
     def forward(self, X):
-        x = self.encoder(X)
-        x = self.decoder(x)
-        return x
+        encode = self.encoder(X)
+        decode = self.decoder(encode)
+        return encode, decode
 
 
 if __name__ == "__main__":
-    model = AutoEncoder()
+    model = ConvEncoder()
     inputs = torch.rand((1, 28, 28))
     inputs = inputs.unsqueeze(dim=0)
     output = model(inputs)

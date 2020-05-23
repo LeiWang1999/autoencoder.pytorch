@@ -6,7 +6,17 @@ And, Learn tensorboard by the way.
 
 Please feel free to pr :)
 
-**have to be aware of this**:
+
+
+#### Instruction to use tensorboard visulize
+
+```bash
+tensorboard --logdir=runs --bind_all
+```
+
+
+
+#### have to be aware of these information::
 
 The output shape of `ConvTranspose2d` can be computed by formula:
 

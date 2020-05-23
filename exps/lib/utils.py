@@ -4,17 +4,6 @@ import torch
 import numpy as np
 
 
-def select_n_random(data, labels, n=100):
-    '''
-    Selects n random datapoints and their corresponding labels from a dataset
-    '''
-    assert len(data) == len(labels)
-
-    # Returns a random permutation of integers from ``0`` to ``n - 1``.
-    perm = torch.randperm(len(data))
-    return data[perm][:n], labels[perm][:n]
-
-
 class Writer():
     def __init__(self, log_dir='./runs/mnist'):
         self.writer = SummaryWriter(log_dir=log_dir)
