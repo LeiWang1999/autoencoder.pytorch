@@ -3,7 +3,7 @@ import torch.nn as nn
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 import numpy as np
-from model.conv import ConvEncoder
+from model.linear import LinearEncoder
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from lib.utils import Writer
@@ -13,7 +13,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Current device is ", device)
 
 # Tensorboard Writer
-writer = Writer(log_dir='./runs/conv')
+writer = Writer(log_dir='./runs/linear')
 
 # Load MNIST images
 root = './data'
@@ -28,7 +28,7 @@ dataset = datasets.MNIST(root=root,
 dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True)
 
 # Initialze Model
-model = ConvEncoder()
+model = LinearEncoder()
 model.to(device)
 epochs = 200
 criterion = nn.MSELoss().to(device)
@@ -51,8 +51,8 @@ for epoch in range(epochs):
         optimizer.step()
         running_loss += loss.item()
 
-    writer.add_scaler('trainning conv loss', running_loss,
-                      epoch * len(dataloader))
+    writer.add_scaler('trainning Linear loss',
+                      running_loss, epoch * len(dataloader))
     running_loss = 0.0
     if epoch % 5 == 0:
         tag = "epoch : " + str(epoch)
@@ -62,4 +62,4 @@ for epoch in range(epochs):
 writer.close()
 
 # Save model paramaters
-torch.save(model.state_dict(), './model/conv_encoder.pth')
+torch.save(model.state_dict(), './model/linear_encoder.pth')

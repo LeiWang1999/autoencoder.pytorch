@@ -18,14 +18,19 @@ bash ./script/prepare.sh
 bash ./script/train.sh ${model_name}
 ```
 
-`${model_name}` can be one of `conv`...
+`${model_name}` can be one of `conv/linear/vae`...
 
 #### Instruction to use tensorboard visulize
 
 ```bash
 tensorboard --logdir=runs --bind_all
 ```
-
+##### Trainning Loss
+![](http://leiblog.wang/static/image/2020/5/RrBF3Y.png)
+##### Decode Performance
+![](http://leiblog.wang/static/image/2020/5/9fiqeI.png)
+##### Model Architecture
+![](http://leiblog.wang/static/image/2020/5/1svLUs.png)
 #### have to be aware of these information:
 
 The output shape of `ConvTranspose2d` can be computed by formula:
