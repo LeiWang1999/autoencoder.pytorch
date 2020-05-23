@@ -6,7 +6,19 @@ And, Learn tensorboard by the way.
 
 Please feel free to pr :)
 
+#### Instruction to Prepare MNIST dataset
 
+```bash
+bash ./script/prepare.sh
+```
+
+#### Instruction to Train Model
+
+```bash
+bash ./script/train.sh ${model_name}
+```
+
+`${model_name}` can be one of `conv`...
 
 #### Instruction to use tensorboard visulize
 
@@ -14,9 +26,7 @@ Please feel free to pr :)
 tensorboard --logdir=runs --bind_all
 ```
 
-
-
-#### have to be aware of these information::
+#### have to be aware of these information:
 
 The output shape of `ConvTranspose2d` can be computed by formula:
 
