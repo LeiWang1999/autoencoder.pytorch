@@ -39,4 +39,4 @@ The output shape of `ConvTranspose2d` can be computed by formula:
 
 Hung-yi Lee MachineLearning Spring2020 Course (https://www.bilibili.com/video/BV1JE411g7XF?p=59)
 
-https://github.com/L1aoXingyu/pytorch-beginner (Model from here, But train code with this repositories have a bug in transform operation, detail in [this pr page](https://github.com/L1aoXingyu/pytorch-beginner/pull/36))
+https://github.com/L1aoXingyu/pytorch-beginner (Conv Model from here, But train code with this repositories have a bug in transform operation, detail in [this pr page](https://github.com/L1aoXingyu/pytorch-beginner/pull/36))
